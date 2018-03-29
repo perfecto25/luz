@@ -5,7 +5,7 @@ from __future__ import print_function
 
 import click
 import platform
-import psutil
+
 from huepy import *
 from .commands import disk
 
