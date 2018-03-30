@@ -12,7 +12,10 @@ from .commands import disk
 @click.group()
 @click.version_option()
 def cli():
-    ''' Luz CLI '''
+    ''' 
+    Luz CLI 
+    command line utility to get system information  
+    '''
     pass
 
 cli.add_command(disk.disk)
@@ -34,5 +37,5 @@ cli.add_command(disk.disk)
 #     # print(info(psutil.disk_usage('/')))
 
 
-# if __name__ == "__main__":
-#     Tellme() 
+if __name__ == "__main__":
+    cli() 

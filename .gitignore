@@ -1,3 +1,7 @@
 venv
 .dist
 .vscode
+*pyc
+*/*.pyc
+*/*/*.pyc
+*egg.info
