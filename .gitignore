@@ -1,7 +1,7 @@
 venv
 .dist
 .vscode
-*pyc
+*.pyc
 */*.pyc
 */*/*.pyc
 *egg.info
