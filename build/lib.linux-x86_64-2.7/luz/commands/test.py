@@ -17,7 +17,7 @@ def get_dir_size(path=os.getcwd()):
             total_size += size
         print(dirsize, dirpath)
     print("{0} bytes".format(total_size))
-    print("{:,} KB").format(total_size/1000)
+    print("{:,} KB").format(total_size/1000, ",")
     print("{:,} MB").format(total_size/1000000)
     print("{:,} GB").format(total_size/1000000000)
 print get_dir_size('/home/mrx')

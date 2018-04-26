@@ -1,4 +1,5 @@
 README.md
+setup.py
 luz/__init__.py
 luz/luz.py
 luz.egg-info/PKG-INFO
@@ -7,3 +8,6 @@ luz.egg-info/dependency_links.txt
 luz.egg-info/entry_points.txt
 luz.egg-info/requires.txt
 luz.egg-info/top_level.txt
+luz/commands/__init__.py
+luz/commands/disk.py
+luz/commands/test.py
