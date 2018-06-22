@@ -1,7 +1,7 @@
 import os
 import json
 import click
-
+import ast
 from huepy import yellow, red
 # to do: 
 # windows OS
@@ -24,11 +24,11 @@ def get_dir_size(json_flag, verbose, path='/'):
             fp = os.path.join(dirpath, f)
             try:
                 size = os.path.getsize(fp)
+                print(size)
             except OSError:
                 #print('error %s' % fp)
                 pass
-            #print("{0} {1}").format(size, fp)
-            #print(dirpath, dirnames, filenames,size)
+
             dirsize += size
            # print(dirpath)
             total_size += size
@@ -41,10 +41,10 @@ def get_dir_size(json_flag, verbose, path='/'):
     payload['total']['b'] = '{:,}'.format(total_size)
     payload['total']['kb'] = '{:,}'.format(total_size/1000, ",")
     payload['total']['mb'] = '{:,}'.format(total_size/1000000, ",")
-    payload['total']['gb'] = '{:,}'.format(total_size/1000000000, ",")
+    #payload['total']['gb'] = '{:,}'.format(total_size/1000000000, ",")
 
     # return total payload data
-    return dict(payload)
+    return json.dumps(dict(payload))
 
 
 @click.group()
@@ -70,29 +70,34 @@ def size(path, json=False, verbose=False):
     '''
     #click.echo('\n'+cyan('%s disk size\n' % path))
 
+
     payload = get_dir_size(json, verbose, path)
+   # print(type(payload))
+
 
     if json:
         if True in verbose:
             click.echo(yellow(payload))
         else:
             try:
+                payload = ast.literal_eval(payload)
                 click.echo(yellow(payload['total']))
             except AttributeError as e:
                 click.echo(red('error generating json, %s' % str(e)))
                 click.echo(yellow('total (kb):  ' + str(payload['total']['kb'])))
     else:
         if True in verbose:
+            print(type(payload))
             for d in payload['dirs']:
                 try:
                     click.echo(yellow(str(d) + ':  ' + str(payload['dirs'][d]/1000) + ' kb'))
                 except UnicodeEncodeError as e:
                     click.echo(red('error displaying sub directories %s' % str(e)))
 
-            click.echo(yellow('total (b):  ' + str(payload['total']['b'])))
+            #click.echo(yellow('total (b):  ' + str(payload['total']['b'])))
             click.echo(yellow('total (kb):  ' + str(payload['total']['kb'])))
             click.echo(yellow('total (mb):  ' + str(payload['total']['mb'])))
-            click.echo(yellow('total (gb):  ' + str(payload['total']['gb'])))
+            #click.echo(yellow('total (gb):  ' + str(payload['total']['gb'])))
         else:
             click.echo(yellow('total:  ' + str(payload['total']['kb']) + ' kb'))
 

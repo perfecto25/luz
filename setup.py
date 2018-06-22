@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='luz',
-    version='0.2',
+    version='0.21',
     description='Returns system info',
     url='https://github.com/perfecto25/luz',
     packages=find_packages(),

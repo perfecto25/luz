@@ -5,3 +5,5 @@ venv
 */*.pyc
 */*/*.pyc
 *egg.info
+*egg*
+
