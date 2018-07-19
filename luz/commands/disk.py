@@ -1,14 +1,24 @@
+from __future__ import absolute_import
 import os
 import json
 import click
 import ast
-from huepy import yellow, red
+import sys
+from huepy import yellow, red, white
+from luz import horizontal
+from click import style as color
 # to do: 
 # windows OS
 # JSON return option
 
 
 def get_dir_size(json_flag, verbose, path='/'):
+    ''' get disk size of directory or file '''
+
+    # check if dir or file exists
+    if not os.path.exists(path):
+        click.echo(color('provided directory or file does not exist: {}'.format(path), fg='red', bold=True))
+        return 'error'
     
     total_size = 0
 
@@ -17,34 +27,41 @@ def get_dir_size(json_flag, verbose, path='/'):
     payload['total'] = {}
     payload['dirs'] = {}
 
-    for dirpath, dirnames, filenames in os.walk(path):
-        dirsize = 0
-        for f in filenames:
-            #print f
-            fp = os.path.join(dirpath, f)
-            try:
-                size = os.path.getsize(fp)
-                print(size)
-            except OSError:
-                #print('error %s' % fp)
-                pass
+    # check Directory size if path is Directory
+    if os.path.isdir(path) is True:
+        for dirpath, dirnames, filenames in os.walk(path):
+            dirsize = 0
+            for f in filenames:
+                fp = os.path.join(dirpath, f)
+                try:
+                    size = os.path.getsize(fp)
+                except OSError:
+                    pass
 
-            dirsize += size
-           # print(dirpath)
-            total_size += size
-            #print(fp)
-            payload['dirs'][fp] = dirsize
+                dirsize += size
+                total_size += size
+                payload['dirs'][fp] = dirsize
     
+    # check File size if path is File
+    if os.path.isfile(path) is True:
+        return click.echo(color(str(os.path.getsize(path)), fg='white'))
+
     # set total size for b, kb, mb, gb
 
 #    kb = "{0}".format(total_size, ",")
-    payload['total']['b'] = '{:,}'.format(total_size)
-    payload['total']['kb'] = '{:,}'.format(total_size/1000, ",")
-    payload['total']['mb'] = '{:,}'.format(total_size/1000000, ",")
-    #payload['total']['gb'] = '{:,}'.format(total_size/1000000000, ",")
+    # payload['total']['b'] = '{:,}'.format(total_size)
+    # payload['total']['kb'] = '{:,}'.format(total_size/1000, ",")
+    # payload['total']['mb'] = '{:,}'.format(total_size/1000000, ",")
+    # payload['total']['gb'] = '{:,}'.format(total_size/1000000000, ",")
+    #print(type(payload['total']))
+    payload['total']['b'] = total_size
+    payload['total']['kb'] = total_size/1000
+    payload['total']['mb'] = total_size/1000000
+    payload['total']['gb'] = total_size/1000000000
 
+   # print(payload)
     # return total payload data
-    return json.dumps(dict(payload))
+    return payload
 
 
 @click.group()
@@ -72,34 +89,52 @@ def size(path, json=False, verbose=False):
 
 
     payload = get_dir_size(json, verbose, path)
-   # print(type(payload))
 
+    if payload == 'error':
+        return
 
     if json:
         if True in verbose:
-            click.echo(yellow(payload))
+            click.echo(color(payload, bg='black', fg='white'))
         else:
             try:
-                payload = ast.literal_eval(payload)
-                click.echo(yellow(payload['total']))
+                #payload = ast.literal_eval(json.dumps(payload))
+                print(payload)
+                click.echo(yellow(json.dump(payload['total'])))
             except AttributeError as e:
                 click.echo(red('error generating json, %s' % str(e)))
                 click.echo(yellow('total (kb):  ' + str(payload['total']['kb'])))
     else:
         if True in verbose:
-            print(type(payload))
             for d in payload['dirs']:
                 try:
-                    click.echo(yellow(str(d) + ':  ' + str(payload['dirs'][d]/1000) + ' kb'))
+
+                    click.echo(color(str(d), fg='yellow') + color('  {:,} bytes'.format(payload['dirs'][d]), fg='white')) 
+                    #click.echo(white('{:,} bytes'.format(payload['dirs'][d])))
+                    #click.echo(yellow(str(d) + ':  ' + str(payload['dirs'][d]) + ' b'))
                 except UnicodeEncodeError as e:
                     click.echo(red('error displaying sub directories %s' % str(e)))
 
             #click.echo(yellow('total (b):  ' + str(payload['total']['b'])))
-            click.echo(yellow('total (kb):  ' + str(payload['total']['kb'])))
-            click.echo(yellow('total (mb):  ' + str(payload['total']['mb'])))
+            #click.echo(yellow('total (kb):  ' + str(payload['total']['kb'])))
+           # click.echo(yellow('total (mb):  ' + str(payload['total']['mb'])))
             #click.echo(yellow('total (gb):  ' + str(payload['total']['gb'])))
         else:
-            click.echo(yellow('total:  ' + str(payload['total']['kb']) + ' kb'))
+            total_b = str(payload['total']['b'])
+            total_kb = str(payload['total']['kb'])
+            total_mb = str(payload['total']['mb'])
+            total_gb = str(payload['total']['gb'])
+            click.echo(yellow("disk space: {0}").format(path))
+            horizontal()
+            click.echo(white("{0} B\n{1} KB\n{2} MB\n{3} GB\n".format(total_b, total_kb, total_mb, total_gb)))
+            
+            
+            # byte: {1}\nkb: {2}".format(
+            #     path, 
+            #     total_b, 
+            #     total_kb
+            # )))
+
 
         
     

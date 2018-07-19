@@ -12,7 +12,7 @@ from commands import disk
 def cli():
     ''' 
     Luz CLI 
-    command line utility to get system information  
+    command line utility to get system information
     '''
     pass
 

@@ -1,5 +1,4 @@
 README.md
-setup.py
 luz/__init__.py
 luz/luz.py
 luz.egg-info/PKG-INFO

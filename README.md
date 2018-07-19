@@ -39,3 +39,6 @@ return disk size in JSON form
 luz disk size /home/user --json
 ```
 
+## Technical
+### Packaging
+``` sudo pip install -e . ```

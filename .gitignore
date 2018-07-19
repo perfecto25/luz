@@ -6,4 +6,7 @@ venv
 */*/*.pyc
 *egg.info
 *egg*
+build
+luz.egg-info
+
 
